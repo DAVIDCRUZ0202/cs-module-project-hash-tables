@@ -36,7 +36,7 @@ Ignore each of the following characters:
 " : ; , . - + = / \ | [ ] { } ( ) * ^ &
 ```
 
-If the input contains no ignored characters, print nothing.
+If the input contains only ignored characters, print nothing.
 
 Sample output (truncated):
 
