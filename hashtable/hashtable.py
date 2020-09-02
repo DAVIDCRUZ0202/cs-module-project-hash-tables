@@ -39,7 +39,7 @@ class HashTable:
         Return the load factor for this hash table.
         Implement this.
         """
-        # Your code here
+        return self.tracker / len(self.table)
 
 
     def fnv1(self, key):
