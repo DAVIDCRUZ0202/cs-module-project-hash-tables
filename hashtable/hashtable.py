@@ -7,7 +7,6 @@ class HashTableEntry:
         self.value = value
         self.next = None
 
-
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 
@@ -16,22 +15,20 @@ class HashTable:
     """
     A hash table that with `capacity` buckets
     that accepts string keys
-
     Implement this.
     """
 
     def __init__(self, capacity):
-        self.capacity = capacity
+        self.capacity = max(capacity, MIN_CAPACITY)
         self.table = [None] * capacity
+        self.tracker = 0
 
     def get_num_slots(self):
         """
         Return the length of the list you're using to hold the hash
         table data. (Not the number of items stored in the hash table,
         but the number of slots in the main list.)
-
         One of the tests relies on this.
-
         Implement this.
         """
         return len(self.table)
@@ -40,7 +37,6 @@ class HashTable:
     def get_load_factor(self):
         """
         Return the load factor for this hash table.
-
         Implement this.
         """
         # Your code here
@@ -49,7 +45,6 @@ class HashTable:
     def fnv1(self, key):
         """
         FNV-1 Hash, 64-bit
-
         Implement this, and/or DJB2.
         """
 
@@ -76,53 +71,85 @@ class HashTable:
     def put(self, key, value):
         """
         Store the value with the given key.
-
         Hash collisions should be handled with Linked List Chaining.
-
         Implement this.
         """
         index = self.hash_index(key)
 
-        self.table[index] = value
+        cur = self.table[index]
 
-        return self.table[index]
+        # for when a key is already there
+        while cur != None:
+            if cur.key == key:
+                cur.value = value
+                return
+            cur = cur.next
+
+
+        new_val = HashTableEntry(key, value)
+        new_val.next = self.table[index]
+        self.table[index] = new_val
+        self.tracker += 1
 
 
     def delete(self, key):
         """
         Remove the value stored with the given key.
-
         Print a warning if the key is not found.
-
         Implement this.
         """
         # Your code here
         index = self.hash_index(key)
-        if self.table[index] == None:
+        cur = self.table[index]
+        if cur == None:
             print("Warning: Key not found")
+        elif cur.key == key:
+            self.table[index] = cur.next
+            self.tracker -= 1
         else:
-            self.table[index] = None
+            prev = cur
+            cur = cur.next 
+            while cur != None:
+                if cur.key == key:
+                    prev.next = cur.next
+                    return
+                prev = cur
+                cur = cur.next
+            return None
+
 
     def get(self, key):
         """
         Retrieve the value stored with the given key.
-
         Returns None if the key is not found.
-
         Implement this.
         """
         index = self.hash_index(key)
-        return self.table[index]
+        cur = self.table[index]
+        while cur != None:
+            if cur.key == key:
+                return cur.value
+            cur = cur.next
+        return None
 
     def resize(self, new_capacity):
         """
         Changes the capacity of the hash table and
         rehashes all key/value pairs.
-
         Implement this.
         """
-        # Your code here
-
+        #self: list, capacity, length
+        old_list = self.table
+        new_table = [None]*new_capacity
+        self.table = new_table
+        self.tracker = 0
+        self.capacity = new_capacity
+        for i in range(len(old_list)):
+            current_entry = old_list[i]
+            if current_entry:
+                while current_entry:
+                    self.put(current_entry.key, current_entry.value)
+                    current_entry = current_entry.next
 
 
 if __name__ == "__main__":
@@ -143,19 +170,19 @@ if __name__ == "__main__":
 
     print("")
 
-    # # Test storing beyond capacity
-    # for i in range(1, 13):
-    #     print(ht.get(f"line_{i}"))
+    # Test storing beyond capacity
+    for i in range(1, 13):
+        print(ht.get(f"line_{i}"))
 
-    # # Test resizing
-    # old_capacity = ht.get_num_slots()
-    # ht.resize(ht.capacity * 2)
-    # new_capacity = ht.get_num_slots()
+    # Test resizing
+    old_capacity = ht.get_num_slots()
+    ht.resize(ht.capacity * 2)
+    new_capacity = ht.get_num_slots()
 
-    # print(f"\nResized from {old_capacity} to {new_capacity}.\n")
+    print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
-    # # Test if data intact after resizing
-    # for i in range(1, 13):
-    #     print(ht.get(f"line_{i}"))
+    # Test if data intact after resizing
+    for i in range(1, 13):
+        print(ht.get(f"line_{i}"))
 
-    print("")
+    print("") 
