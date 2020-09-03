@@ -10,4 +10,17 @@ with open("input.txt") as f:
 
 # TODO: construct 5 random sentences
 # Your code here
+lit = []
 
+for word in words.split():
+    lit.append(word)
+
+print(lit)
+
+stop = '.?!"'
+for word in lit:
+    if word[-1] in stop:
+        print(word)
+        break
+    else:
+        print(random.choice(lit))
