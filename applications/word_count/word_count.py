@@ -1,5 +1,19 @@
 def word_count(s):
-    # Your code here
+    d = {}
+    x = s.split()
+    for word in x:
+        for i in word:
+            if i.isalnum() == False:
+                word = word.replace(i, '')
+        word = word.lower()
+        if word == '':
+            continue
+        elif word not in d:
+            d[word] = 1
+        else:
+            d[word] += 1
+    return d
+        
 
 
 

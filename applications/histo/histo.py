@@ -12,3 +12,9 @@ def word_count(text_doc):
 
 
 word_count('robin.txt')
+
+# How to use backslash
+# backslashes escape the character following it
+# escape a backslash followed by a backslash
+
+# \\n to target \n

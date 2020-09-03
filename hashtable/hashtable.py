@@ -95,6 +95,7 @@ class HashTable:
         Hash collisions should be handled with Linked List Chaining.
         Implement this.
         """
+
         # take the passed in key, create a hash in order to index it
         index = self.hash_index(key)
 
@@ -131,6 +132,10 @@ class HashTable:
         # update our tracker so that we have an accurate load factor
         self.tracker += 1
 
+        if self.get_load_factor() > 0.7:
+            self.resize(self.capacity*2)
+
+
 
     # The delete function also has a lot of bits of code which all have important functionalities, and must all be 
     # described in plain english to gain a deeper understanding
@@ -162,6 +167,9 @@ class HashTable:
             # this means that the new index head is what was originally next in the linked list of that index slot
             # we also reduce our tracker by 1 since there is one less item in this hash table
             self.tracker -= 1
+
+            if self.get_load_factor() < 0.2:
+                self.resize(self.capacity//2)
         # if the key did not match in the index position, we delete this key by some more pointer shuffling..
         else:
             # begin  by creating a variable to track what is behind the item to be deleted. AKA the "prev"ious item
@@ -175,6 +183,11 @@ class HashTable:
                 if cur.key == key:
                     # make the pointer of the previous item's .next point to the next item of the "cur"rent location
                     prev.next = cur.next
+                    self.tracker -= 1
+
+                    if self.get_load_factor() < 0.2:
+                        self.resize(self.capacity//2)
+
                     # blank return
                     return
                 # if the delete method gets this far, then we need to move both of our variables forward by one step,
@@ -185,20 +198,31 @@ class HashTable:
             return None
 
 
+    # the get method is simpler
     def get(self, key):
         """
         Retrieve the value stored with the given key.
         Returns None if the key is not found.
         Implement this.
         """
+        # begin the same way
+        # hash the passed in key value
         index = self.hash_index(key)
+        # create a tracker for the current index position of the table
         cur = self.table[index]
+        # while loop to iterate through the linked list at the index location
         while cur != None:
+            # if the keys match
             if cur.key == key:
+                # return the value
                 return cur.value
+            # if the keys dont match, check the .next position of that index location
             cur = cur.next
+        # if the loop exits, there is no match, so return none
         return None
 
+
+    # resizing is done in order to stop collisions
     def resize(self, new_capacity):
         """
         Changes the capacity of the hash table and
@@ -206,16 +230,29 @@ class HashTable:
         Implement this.
         """
         #self: list, capacity, length
+        # save the old list to a variable so that we can iterate through it later on
         old_list = self.table
-        new_table = [None]*new_capacity
+        # reset the capacity
+        self.capacity = max(new_capacity, MIN_CAPACITY)
+        # the new table should have a capacity with the passed in new side
+        new_table = [None]*self.capacity
+        # re-assign the .table variable to the new table
         self.table = new_table
+        # reset the tracker
         self.tracker = 0
-        self.capacity = new_capacity
+        # now that we have a new blank table, use the old table's variable to iterate through it 
+        # and put all the elements of the old list in the new list
+        # for each index number in the range of the old list
         for i in range(len(old_list)):
+            # make a variable holding the old list's entry at that index position
             current_entry = old_list[i]
+            # if the current_entry isnt none
             if current_entry:
+                # while we are holding it
                 while current_entry:
+                    # put the current entry key and value into the table which is newly created
                     self.put(current_entry.key, current_entry.value)
+                    # then re-assign the current_entry to the next position and repeat
                     current_entry = current_entry.next
 
 

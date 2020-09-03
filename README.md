@@ -62,7 +62,7 @@ python test_hashtable_resize.py
 ```
 
 Stretch: When load factor decreases below `0.2`, automatically rehash
-the table to half its previous size, down to a minimum of 8 slots.
+the table to half its previous size, down to a minimum of 8 slots. 
 
 ## Day 3 and Day 4
 
